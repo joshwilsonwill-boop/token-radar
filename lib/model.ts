@@ -25,6 +25,8 @@
 // No protocol name is ever special-cased: the same function scores every row, and every number it
 // uses comes from the snapshot's own figures.
 
+import { scoreBoard, type Riser } from './momentum.ts';
+
 /** The snapshot's protocol entry: exactly the ten fields the sealed input carries. */
 export interface SnapshotProtocol {
   slug: string;
@@ -116,6 +118,8 @@ export interface BoardRow {
   on_watchlist: boolean;
   age_days: number | null;
   implied_value_usd: number;
+  momentum_rank: number;
+  momentum_score: number;
   model: {
     comp_multiple: number;
     comp_peers: number;
@@ -143,6 +147,8 @@ export interface RadarRow {
   age_days: number | null;
   on_watchlist: boolean;
   implied_value_usd: number;
+  momentum_rank: number;
+  momentum_score: number;
   comp_multiple: number;
   comp_peers: number;
   comp_fallback: boolean;
@@ -179,6 +185,7 @@ export interface RadarData {
   comps: Record<string, CompEntry>;
   rows: RadarRow[];
   live: LiveRow[];
+  risers: Riser[];
 }
 
 /** Why the snapshot is not one this model can score. */
@@ -494,6 +501,8 @@ export function radarRow(row: BoardRow): RadarRow {
     age_days: row.age_days,
     on_watchlist: row.on_watchlist,
     implied_value_usd: row.implied_value_usd,
+    momentum_rank: row.momentum_rank,
+    momentum_score: row.momentum_score,
     comp_multiple: row.model.comp_multiple,
     comp_peers: row.model.comp_peers,
     comp_fallback: row.model.comp_fallback,
@@ -506,7 +515,7 @@ export function radarRow(row: BoardRow): RadarRow {
 
 /** Everything the dashboard renders, from the snapshot. */
 export function buildRadar(snapshot: Snapshot, model: ModelConstants = MODEL): { board: BoardRow[]; radar: RadarData } {
-  const board = buildBoard(snapshot, model);
+  const { scored: board, risers } = scoreBoard(buildBoard(snapshot, model));
   const table = peerTable(snapshot, model);
   const live = liveRows(snapshot);
   const early = board.filter((r) => !r.on_watchlist).length;
@@ -524,6 +533,7 @@ export function buildRadar(snapshot: Snapshot, model: ModelConstants = MODEL): {
     comps: table.comps,
     rows: board.map(radarRow),
     live,
+    risers,
   };
   return { board, radar };
 }

@@ -15,6 +15,7 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, statSyn
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { boardIssue, buildRadar, dataScript, parseSnapshot } from './lib/model.ts';
+import { risersMarkdown } from './lib/momentum.ts';
 import { buildDossier } from './vendor/makefun-board.ts';
 
 const here = fileURLToPath(new URL('.', import.meta.url));
@@ -79,6 +80,10 @@ for (const name of shots) {
     process.exit(1);
   }
 }
+
+// The risers file, beside the dashboard: the week's sharpest climbs, so the dossier carries
+// them as a section of its own. It is written from this run's board, never by hand.
+writeFileSync(join(out, 'dashboard', 'risers.md'), risersMarkdown(radar.risers));
 
 // The dossier is written last: the scorer rebuilds it from this /output and compares bytes.
 writeFileSync(join(out, 'dossier.json'), buildDossier(out, { text_max_bytes: TEXT_MAX_BYTES, screenshots: SCREENSHOT_CAPS, dashboard: { max_files: 400, max_bytes: 4_194_304 } }));
