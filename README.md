@@ -6,6 +6,14 @@
 
 Token Radar ranks every pre-token protocol by the implied value its launch would carry, with a farm plan for each one. It reads a sealed DefiLlama snapshot, prices each protocol off the live-token peers in its own category (median market-cap-to-TVL), adjusts for seven-day growth, age with no token, and chain count, and hands in a static dashboard: the board, a detail view per protocol, and a live-token view set aside from the ranking.
 
+## Screenshots
+
+![The board — 198 pre-token protocols ranked by implied launch value](screenshots/1-board.png)
+
+![Detail view — Steakhouse Financial, model breakdown and farm plan](screenshots/2-detail.png)
+
+![Filtered view — RWA category, 16 protocols](screenshots/3-filtered.png)
+
 ## Run it
 
 ```sh
